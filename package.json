@@ -1,0 +1,24 @@
+{
+  "name": "untongue",
+  "version": "0.1.0",
+  "private": true,
+  "description": "UnTongue - free-first cloud OpenCode runners on user-owned runtimes",
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:api": "npm --workspace apps/api run dev",
+    "dev:worker": "npm --workspace apps/worker run dev",
+    "dev:web": "npm --workspace apps/web run dev",
+    "build": "npm run build --workspaces",
+    "test": "vitest run",
+    "test:integration": "INTEGRATION=1 vitest run tests/integration.test.ts"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "vitest": "^3.2.7"
+  }
+}

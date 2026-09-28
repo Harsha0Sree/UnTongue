@@ -1,0 +1,31 @@
+services:
+  api:
+    build: ./apps/api
+    ports:
+      - "8080:8080"
+    env_file: .env
+    volumes:
+      - ./data:/data
+      - ./work:/work
+    environment:
+      DATA_DIR: /data
+      DATABASE_PATH: /data/control.db
+      WORK_ROOT: /work
+    command: npm start
+
+  worker:
+    build: ./apps/api
+    env_file: .env
+    volumes:
+      - ./data:/data
+      - ./work:/work
+    environment:
+      DATA_DIR: /data
+      DATABASE_PATH: /data/control.db
+      WORK_ROOT: /work
+    command: npm --workspace apps/worker start || node ./apps/worker/dist/worker.js
+    depends_on:
+      - api
+
+volumes:
+  data:

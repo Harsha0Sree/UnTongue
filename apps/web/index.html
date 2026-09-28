@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>UnTongue - free-first cloud OpenCode runners</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 960px; margin: 2rem auto; padding: 0 1rem; line-height: 1.5; }
+    .card { border: 1px solid #ddd; border-radius: 8px; padding: 1rem; margin: 1rem 0; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 12px; }
+    .free { background: #e6f4ea; } .paid { background: #fce8e6; } .warn { background: #fef7e0; }
+    pre { background: #f6f8fa; padding: 1rem; overflow: auto; }
+    label { display: block; margin: 0.5rem 0; }
+    input, select, textarea { width: 100%; padding: 0.5rem; }
+  </style>
+</head>
+<body>
+  <h1>UnTongue</h1>
+  <p>Run OpenCode agents on <strong>your own</strong> free allowances while your laptop is off. Free-first: paid runtimes are hidden until you explicitly opt in.</p>
+
+  <div class="card">
+    <h2>1. Sign in</h2>
+    <a href="/api/auth/github"><button>Sign in with GitHub OAuth</button></a>
+    <p><small>Scopes requested: <code>repo codespace read:user</code> only. GitHub OAuth web flow (not Actions OIDC).</small></p>
+  </div>
+
+  <div class="card">
+    <h2>2. Eligible runtimes (free-first)</h2>
+    <label><input type="checkbox" id="show-paid" onchange="loadProviders()" /> Show paid runtimes (opt-in, billed to you)</label>
+    <div id="providers">Loading…</div>
+  </div>
+
+  <div class="card">
+    <h2>3. Connect your runtime</h2>
+    <label>Provider
+      <select id="rt-provider"><option value="oracle-byom">oracle-byom (your tenancy, free)</option><option value="codespaces">codespaces (your GitHub quota)</option><option value="oracle-paid">oracle-paid (your billing, opt-in)</option></select>
+    </label>
+    <label>Credentials JSON (stored encrypted, never displayed)
+      <textarea id="rt-creds" rows="4" placeholder='{"OCI_TENANCY_OCID":"ocid1...","OCI_USER_OCID":"ocid1...","OCI_FINGERPRINT":"..","OCI_PRIVATE_KEY_PEM":"-----BEGIN...","OCI_REGION":"us-ashburn-1"}'></textarea>
+    </label>
+    <button onclick="connectRuntime()">Connect runtime</button>
+    <p><small>Oracle: connect your own tenancy. Codespaces: no extra creds - uses your GitHub OAuth token.</small></p>
+  </div>
+
+  <div class="card">
+    <h2>4. Start agent</h2>
+    <label>Repo URL <input id="job-repo" placeholder="https://github.com/you/repo" /></label>
+    <label>Task <textarea id="job-task" rows="3" placeholder="Fix login redirect…"></textarea></label>
+    <label>Provider
+      <select id="job-provider"><option value="oracle-byom">oracle-byom</option><option value="codespaces">codespaces</option><option value="oracle-paid">oracle-paid (paid opt-in)</option></select>
+    </label>
+    <label><input type="checkbox" id="paid-consent" /> I understand this may bill my account (paid only)</label>
+    <details><summary>Advanced: override branch isolation (danger)</summary>
+      <label><input type="checkbox" id="allow-shared" /> Share one branch (conflicts possible)</label>
+      <label>Shared branch <input id="shared-branch" placeholder="main" /></label>
+    </details>
+    <button onclick="startJob()">Start OpenCode job</button>
+    <div id="job-result"></div>
+  </div>
+
+  <div class="card">
+    <h2>5. Jobs (review + push)</h2>
+    <button onclick="loadJobs()">Refresh jobs</button>
+    <div id="jobs"></div>
+  </div>
+
+  <script src="./main.js"></script>
+</body>
+</html>
